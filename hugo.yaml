@@ -2,7 +2,7 @@ baseurl: https://Aiden2keke.github.io
 languageCode: en-us
 theme: hugo-theme-stack
 paginate: 3
-title: Example Site
+title: Yidong Zhu's Site
 copyright: 朱奕栋-Aiden
 
 # Theme i18n support
@@ -64,7 +64,7 @@ params:
             src: img/avatar.png
 
     article:
-        math: false
+        math: true
         toc: true
         readingTime: false
         license:
