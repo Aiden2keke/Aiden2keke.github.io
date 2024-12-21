@@ -1,12 +1,13 @@
 ---
 title: About
-description: The information about this website
-date: '2024-12-18'
+description: Hi! I am Yidong Zhu.
+date: '2024-12-20'
 aliases:
   - about-us
   - about-hugo
   - contact
-
+license: CC BY-NC-ND
+lastmod: '2024-12-20'
 menu:
     main: 
         weight: -90

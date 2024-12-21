@@ -1,7 +1,5 @@
 ---
 title: Project
-slug: "project"
-layout: "project"
 menu:
     main: 
         weight: -50

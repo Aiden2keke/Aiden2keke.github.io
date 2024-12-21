@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" Introduction The single inverted pendulum (SIP) model describes an unstable dynamic system where a vertical rod (pendulum) is mounted on a cart that can freely move along a horizontal surface. The wheels of the cart are driven by a motor, and by controlling the motor, the cart&rsquo;s motion can be adjusted to balance the rod.\nIn this system:\n">
+<title>Control_the_first_order_inverted_pendulum_with_LQR_in_Mujoco_simulation</title>
+
+<link rel='canonical' href='http://localhost:1313/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Control_the_first_order_inverted_pendulum_with_LQR_in_Mujoco_simulation">
+<meta property='og:description' content=" Introduction The single inverted pendulum (SIP) model describes an unstable dynamic system where a vertical rod (pendulum) is mounted on a cart that can freely move along a horizontal surface. The wheels of the cart are driven by a motor, and by controlling the motor, the cart&rsquo;s motion can be adjusted to balance the rod.\nIn this system:\n">
+<meta property='og:url' content='http://localhost:1313/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/'>
+<meta property='og:site_name' content='Yidong Zhu'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2024-12-20T18:22:50-06:00'/><meta property='article:modified_time' content='2024-12-20T18:22:50-06:00'/>
+<meta name="twitter:title" content="Control_the_first_order_inverted_pendulum_with_LQR_in_Mujoco_simulation">
+<meta name="twitter:description" content=" Introduction The single inverted pendulum (SIP) model describes an unstable dynamic system where a vertical rod (pendulum) is mounted on a cart that can freely move along a horizontal surface. The wheels of the cart are driven by a motor, and by controlling the motor, the cart&rsquo;s motion can be adjusted to balance the rod.\nIn this system:\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu5140629003129445925.png" width="300"
+                            height="376" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Yidong Zhu</a></h1>
+            <h2 class="site-description">Example description</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Aiden2keke'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/project/' >
+                
+                
+                
+                    <?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg enable-background="new 0 0 128 128" id="Слой_1" version="1.1" viewBox="0 0 128 128" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M17,2v124h94V23.2L89.8,2H17z M91,8.8L104.2,22H91V8.8z M21,122V6h66v20h20v96H21z" fill="#3EBBC4"/><rect fill="#3EBBC4" height="4" width="70" x="29" y="77"/><rect fill="#3EBBC4" height="4" width="70" x="29" y="87"/><rect fill="#3EBBC4" height="4" width="25" x="74" y="97"/><path d="M64,63.6c8.7,0,17.4-1.5,25.7-4.4l1.3-0.5v-7.3l-3.1-0.9v-2.9c0-9-5-17.2-12.9-21.2v-0.2   c0-2.3-1.9-4.2-4.2-4.2H66v-0.6h-4V22h-4.8c-2.3,0-4.2,1.9-4.2,4.2v0.2c-7.9,4.1-12.9,12.3-12.9,21.2v2.9L37,51.5v7.3l1.3,0.5   C46.6,62.1,55.3,63.6,64,63.6z M41,54.5l3.1-0.9v-5.9c0-6.7,3.4-13,8.9-16.6v6.1h4v-11c0-0.1,0.1-0.2,0.2-0.2H62v17.3h4V26h4.8   c0.1,0,0.2,0.1,0.2,0.2v11h4v-6.1c5.5,3.7,8.9,9.9,8.9,16.6v5.9l3.1,0.9v1.4c-14.9,4.9-31.1,4.9-46,0V54.5z" fill="#3EBBC4"/><rect fill="#3EBBC4" height="4" width="30.7" x="48.6" y="50.1"/></g></svg>
+                
+                <span>Project</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/research/' >
+                
+                
+                
+                    <?xml version="1.0" ?><svg fill="none" height="26" viewBox="0 0 31 26" width="31" xmlns="http://www.w3.org/2000/svg"><path d="M1.79999 1V25" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M1.79999 25H29.2" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M6.5 19C7.60457 19 8.5 18.1046 8.5 17C8.5 15.8954 7.60457 15 6.5 15C5.39543 15 4.5 15.8954 4.5 17C4.5 18.1046 5.39543 19 6.5 19Z" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M12.5 8.29999C13.6046 8.29999 14.5 7.40456 14.5 6.29999C14.5 5.19542 13.6046 4.29999 12.5 4.29999C11.3954 4.29999 10.5 5.19542 10.5 6.29999C10.5 7.40456 11.3954 8.29999 12.5 8.29999Z" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M19.2 18.3C20.3046 18.3 21.2 17.4046 21.2 16.3C21.2 15.1954 20.3046 14.3 19.2 14.3C18.0954 14.3 17.2 15.1954 17.2 16.3C17.2 17.4046 18.0954 18.3 19.2 18.3Z" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M27.2 10.3C28.3046 10.3 29.2 9.40456 29.2 8.29999C29.2 7.19542 28.3046 6.29999 27.2 6.29999C26.0954 6.29999 25.2 7.19542 25.2 8.29999C25.2 9.40456 26.0954 10.3 27.2 10.3Z" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M2.5 17.7H4.5" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M7.79999 15.7L11.2 7.70001" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M13.8 7.70001L19.2 14.3" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/><path d="M21.2 15L25.2 9.70001" stroke="#4F4F4F" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/></svg>
+                
+                <span>Research</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" selected>English</option>
+                                
+                                    <option value="http://localhost:1313/zh-cn/" >简体中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#notations">Notations</a></li>
+    <li><a href="#force-analysis">Force Analysis</a></li>
+    <li><a href="#ode">ODE</a></li>
+    <li><a href="#transfer-function">Transfer Function</a></li>
+    <li><a href="#matrix-form">Matrix Form</a></li>
+    <li><a href="#lqr-control">LQR Control</a></li>
+    <li><a href="#simulation">Simulation</a></li>
+    <li><a href="#mujoco-simulation">Mujoco Simulation</a></li>
+    <li><a href="#reference">Reference</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/">Control_the_first_order_inverted_pendulum_with_LQR_in_Mujoco_simulation</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Dec 20, 2024</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <hr>
+<h2 id="introduction">Introduction
+</h2><p>The single inverted pendulum (SIP) model describes an unstable dynamic system where a vertical rod (pendulum) is mounted on a cart that can freely move along a horizontal surface. The wheels of the cart are driven by a motor, and by controlling the motor, the cart&rsquo;s motion can be adjusted to balance the rod.</p>
+<p><img src="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure1.png"
+	width="184"
+	height="138"
+	srcset="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure1_hu12534347743473063530.png 480w, /p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure1_hu4114305789991801843.png 1024w"
+	loading="lazy"
+	
+		alt="Figure 1: Physical model of first order inverted pendulum"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="133"
+		data-flex-basis="320px"
+	
+></p>
+<p>In this system:</p>
+<ul>
+<li><strong>Input</strong>: Torque applied to the cart&rsquo;s wheels.</li>
+<li><strong>Output</strong>: Position of the cart and the angle of the rod relative to the vertical.</li>
+</ul>
+<hr>
+<h2 id="notations">Notations
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Notation</th>
+          <th>Definition</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>M</td>
+          <td>Mass of cart</td>
+      </tr>
+      <tr>
+          <td>m</td>
+          <td>Mass of pendulum</td>
+      </tr>
+      <tr>
+          <td>L</td>
+          <td>Distance from the center of gravity of pendulum to the joint</td>
+      </tr>
+      <tr>
+          <td>I</td>
+          <td>The moment of inertia of pendulum</td>
+      </tr>
+      <tr>
+          <td>b</td>
+          <td>Damping coefficient</td>
+      </tr>
+      <tr>
+          <td>u(t)</td>
+          <td>External force</td>
+      </tr>
+      <tr>
+          <td>x</td>
+          <td>Displacement of cart</td>
+      </tr>
+      <tr>
+          <td>θ</td>
+          <td>Angle of pendulum with respect to -y direction</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="force-analysis">Force Analysis
+</h2><p><img src="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure2.png"
+	width="239"
+	height="125"
+	srcset="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure2_hu18079337661261250655.png 480w, /p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure2_hu3450883293740075943.png 1024w"
+	loading="lazy"
+	
+		alt="Figure 2: Free body diagram of cart"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="191"
+		data-flex-basis="458px"
+	
+></p>
+<p>From Figure 2, we can derive the following equations:</p>
+$$
+M\ddot{x} + b\dot{x} + N = F \tag{1}
+$$<p><img src="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure3.png"
+	width="139"
+	height="144"
+	srcset="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure3_hu18310309506110272147.png 480w, /p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure3_hu10697709139066978899.png 1024w"
+	loading="lazy"
+	
+		alt="Figure 3: Free body diagram of pendulum"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="96"
+		data-flex-basis="231px"
+	
+></p>
+<p>From Figure 3, we can derive:</p>
+$$
+N = m \frac{d^2}{dt^2}(x + l\sin\theta) = m\ddot{x} + ml\ddot{\theta}\cos\theta - ml\dot{\theta}^2\sin\theta \tag{2}
+$$$$
+P = mg + m \frac{d^2}{dt^2}(l\cos\theta) = mg - ml\ddot{\theta}\sin\theta - ml\dot{\theta}^2\cos\theta \tag{3}
+$$$$
+I\ddot{\theta} = -P l\sin\theta - N l\cos\theta \tag{4}
+$$<hr>
+<h2 id="ode">ODE
+</h2><p>Substituting equation (2) into equation (1), and substituting equations (2), (3) into equation (4) yields:</p>
+$$
+(M+m)\ddot{x} + b\dot{x} + ml\ddot{\phi}\cos\theta - ml\dot{\theta}^2\sin\theta = F \tag{5}
+$$$$
+(I - ml^2\sin^2\theta + ml^2\cos^2\theta)\ddot{\theta} - 2ml^2\sin\theta\cos\theta\dot{\theta}^2 + lm g\sin\theta = -lm\cos\theta\ddot{x} \tag{6}
+$$$$\theta = \pi + \phi $$$$\phi \to 0 ,  \sin\theta \approx -\phi ,  \cos\theta \approx -1 , \dot{\theta}^2 \approx 0 $$<p>, we get:</p>
+$$
+(M+m)\ddot{x} + b\dot{x} + ml\ddot{\phi} = F \tag{7}
+$$$$
+(I + ml^2)\ddot{\phi} - mgl\phi = ml\ddot{x} \tag{8}
+$$<hr>
+<h2 id="transfer-function">Transfer Function
+</h2><p>After applying Laplace transform, we get:</p>
+$$
+\big((M+m)s^2 + bs\big)X(s) + mls^2\Phi(s) = U(s) \tag{9}
+$$$$
+\big((I + ml^2)s^2 - mgl\big)\Phi(s) = mls^2 X(s) \tag{10}
+$$<p>where \( F = u(t) \). Therefore, the transfer functions are:</p>
+$$
+G_x(s) = \frac{X(s)}{U(s)} = \frac{(I + ml^2)s^2 - mgl}{\big((M+m)(I+ml^2) - m^2l^2\big)s^4 + b(I+ml^2)s^3 - mgl(M+m)s^2 - bmgls}
+$$$$
+G_\phi(s) = \frac{\Phi(s)}{U(s)} = \frac{mls}{\big((M+m)(I+ml^2) - m^2l^2\big)s^3 + b(I+ml^2)s^2 - mgl(M+m)s - bmgl}
+$$<hr>
+<h2 id="matrix-form">Matrix Form
+</h2>$$
+\vec{x} =
+\begin{bmatrix}
+x \\
+\dot{x} \\
+\phi \\
+\dot{\phi}
+\end{bmatrix}, \quad
+\dot{\vec{x}} = A\vec{x} + B\vec{u}, \quad
+\vec{y} = C\vec{x} + D\vec{u}
+$$$$ p = I(M+m) + Mml^2 $$<p>, the matrices are defined as:</p>
+$$
+A =
+\begin{bmatrix}
+0 & 1 & 0 & 0 \\\
+0 & -\frac{(I+ml^2)b}{p} & \frac{(m^2g l^2)}{p} & 0 \\\
+0 & 0 & 0 & 1 \\\
+0 & -\frac{mlb}{p} & \frac{mgl(M+m)}{p} & 0
+\end{bmatrix}, \quad
+B =
+\begin{bmatrix}
+0 \\\
+\frac{(I+ml^2)}{p} \\\
+0 \\\
+\frac{ml}{p}
+\end{bmatrix}
+$$$$
+C =
+\begin{bmatrix}
+1 & 0 & 0 & 0 \\\
+0 & 0 & 1 & 0
+\end{bmatrix}, \quad
+D =
+\begin{bmatrix}
+0 \\\
+0
+\end{bmatrix}
+$$<p>The above matrices can be defined and calculated in Python as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># System parameters</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">M</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">I</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># State-space matrices</span>
+</span></span><span class="line"><span class="cl"><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">I</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span> <span class="o">/</span> <span class="n">p</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">g</span> <span class="o">/</span> <span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">m</span> <span class="o">*</span> <span class="n">L</span> <span class="o">*</span> <span class="n">b</span> <span class="o">/</span> <span class="n">p</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">g</span> <span class="o">*</span> <span class="n">L</span> <span class="o">*</span> <span class="p">(</span><span class="n">M</span> <span class="o">+</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[(</span><span class="n">I</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[</span><span class="n">m</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="n">p</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">              <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="lqr-control">LQR Control
+</h2><p>The performance index for the LQR control is given by:</p>
+$$
+J_{\text{min}} = \int_{0}^{\infty} \big(x^T Q x + u^T R u\big) dt
+$$<p>The control law is defined as:</p>
+$$
+u = -Kx = -[k_1, k_2, \dots] 
+\begin{bmatrix}
+x_1 \\\
+x_2 \\\
+\vdots
+\end{bmatrix}
+$$<p>The closed-loop state-space equation becomes:</p>
+$$
+\dot{\vec{x}} = (A - BK)\vec{x} = A_{\text{cl}} \vec{x}
+$$<p>For this system, the \( Q \) matrix is defined as:</p>
+$$
+Q =
+\begin{bmatrix}
+a & 0 & 0 & 0 \\\
+0 & b & 0 & 0 \\\
+0 & 0 & c & 0 \\\
+0 & 0 & 0 & d
+\end{bmatrix}
+$$<p>Where:</p>
+<ul>
+<li>Increasing \( a \) increases the weight on the cart&rsquo;s position, leading to faster balance.</li>
+<li>Increasing \( c \) increases the weight on the pendulum&rsquo;s angle, allowing recovery from larger offset angles.</li>
+<li>Increasing \( R \) slows down the balancing process.</li>
+</ul>
+<p>Python Code:</p>
+<p>The LQR control can be implemented in Python as follows:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Manually define the Q matrix and set the weights</span>
+</span></span><span class="line"><span class="cl"><span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">Q</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Car position weight</span>
+</span></span><span class="line"><span class="cl"><span class="n">Q</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Swing Angle weight</span>
+</span></span><span class="line"><span class="cl"><span class="n">R</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Calculate the LQR feedback gain K</span>
+</span></span><span class="line"><span class="cl"><span class="n">K</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">lqr</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Construct a closed-loop state-space system</span>
+</span></span><span class="line"><span class="cl"><span class="n">Ac</span> <span class="o">=</span> <span class="n">A</span> <span class="o">-</span> <span class="n">B</span> <span class="o">@</span> <span class="n">K</span>
+</span></span><span class="line"><span class="cl"><span class="n">Bc</span> <span class="o">=</span> <span class="n">B</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cc</span> <span class="o">=</span> <span class="n">C</span>
+</span></span><span class="line"><span class="cl"><span class="n">Dc</span> <span class="o">=</span> <span class="n">D</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create a closed-loop system</span>
+</span></span><span class="line"><span class="cl"><span class="n">sys_cl</span> <span class="o">=</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">ss</span><span class="p">(</span><span class="n">Ac</span><span class="p">,</span> <span class="n">Bc</span><span class="p">,</span> <span class="n">Cc</span><span class="p">,</span> <span class="n">Dc</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="simulation">Simulation
+</h2><p>Python Code:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Simulation parameters</span>
+</span></span><span class="line"><span class="cl"><span class="n">M</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># kg</span>
+</span></span><span class="line"><span class="cl"><span class="n">m</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># kg</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># N/m/s</span>
+</span></span><span class="line"><span class="cl"><span class="n">g</span> <span class="o">=</span> <span class="mf">9.8</span>  <span class="c1"># m/s^2</span>
+</span></span><span class="line"><span class="cl"><span class="n">L</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># m</span>
+</span></span><span class="line"><span class="cl"><span class="n">I</span> <span class="o">=</span> <span class="mf">0.018</span>  <span class="c1"># kg*m^2</span>
+</span></span><span class="line"><span class="cl"><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>  <span class="c1"># Time array</span>
+</span></span><span class="line"><span class="cl"><span class="n">r</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># Reference input</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Feedforward gain Nbar calculation</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl"><span class="n">sys_ss</span> <span class="o">=</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">ss</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">Cn</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">Nbar</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">Cn</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">A</span> <span class="o">-</span> <span class="n">B</span> <span class="o">@</span> <span class="n">K</span><span class="p">)</span> <span class="o">@</span> <span class="n">B</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Simulate closed-loop system response</span>
+</span></span><span class="line"><span class="cl"><span class="n">t</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">forced_response</span><span class="p">(</span><span class="n">sys_cl</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">Nbar</span> <span class="o">*</span> <span class="n">r</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Plot the response</span>
+</span></span><span class="line"><span class="cl"><span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Cart Position (m)&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Pendulum Angle (radians)&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Cart Position (m)&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Pendulum Angle (radians)&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Step Response with LQR Control&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We can see the simulation result in Figure 4.</p>
+<p><img src="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure4.png"
+	width="533"
+	height="321"
+	srcset="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure4_hu11415734265437945045.png 480w, /p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure4_hu4249203485782169461.png 1024w"
+	loading="lazy"
+	
+		alt="Figure 4: Result of simulation"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="166"
+		data-flex-basis="398px"
+	
+></p>
+<hr>
+<h2 id="mujoco-simulation">Mujoco Simulation
+</h2><p>The Mujoco simulation demonstrates the performance of the LQR control applied to the inverted pendulum system. Below is the Python code to simulate the system in the Mujoco environment:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Initialize the MuJoCo environment</span>
+</span></span><span class="line"><span class="cl"><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&#34;InvertedPendulum-v5&#34;</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s2">&#34;human&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">observation</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Simulation loop</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Get current status</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cart_pos</span><span class="p">,</span> <span class="n">cart_vel</span><span class="p">,</span> <span class="n">pole_angle</span><span class="p">,</span> <span class="n">pole_angular_vel</span> <span class="o">=</span> <span class="n">observation</span>
+</span></span><span class="line"><span class="cl">    <span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cart_pos</span><span class="p">,</span> <span class="n">cart_vel</span><span class="p">,</span> <span class="n">pole_angle</span><span class="p">,</span> <span class="n">pole_angular_vel</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Computational control input</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u</span> <span class="o">=</span> <span class="o">-</span><span class="n">K</span> <span class="o">@</span> <span class="n">state</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">low</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">high</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Perform the action and get the new state</span>
+</span></span><span class="line"><span class="cl">    <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># If terminated, reset the environment</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">done</span> <span class="ow">or</span> <span class="n">truncated</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">observation</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We can see the simulation result in Figure 5.</p>
+<p><img src="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure5.gif"
+	width="426"
+	height="240"
+	srcset="/p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure5_hu7770249588040280018.gif 480w, /p/control_the_first_order_inverted_pendulum_with_lqr_in_mujoco_simulation/Figure5_hu13705750702426337011.gif 1024w"
+	loading="lazy"
+	
+		alt="Figure 5: Result of Mujoco simulation"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="177"
+		data-flex-basis="426px"
+	
+></p>
+<hr>
+<h2 id="reference">Reference
+</h2><p><a class="link" href="https://zhuanlan.zhihu.com/p/54071212?utm_psn=1853238306768289792"  target="_blank" rel="noopener"
+    >https://zhuanlan.zhihu.com/p/54071212?utm_psn=1853238306768289792</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+        renderMathInElement(document.body, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2024 朱奕栋-Aiden
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.29.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.d40dbdba1ebfd88c924a79c543b654cb4bd9277f0e4a5decb6e64716fc080cfa.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

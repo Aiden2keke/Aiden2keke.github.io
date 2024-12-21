@@ -1,15 +1,10 @@
 ---
 title: "Research"
-slug: "research"
-layout: "research"
-outputs:
-    - html
-    - json
 menu:
     main:
-        weight: -60
+        weight: -40
         params: 
-            icon: search
+            icon: research
 
 ---
 Welcome to the Research page. Here, you can find details about ongoing and past researches.

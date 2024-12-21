@@ -1,7 +1,7 @@
 +++
-title = 'Self_introduction'
-date = 2024-12-18T20:28:29-06:00
+date = '2024-12-20T18:21:41-06:00'
 draft = true
+title = 'Self_introduction'
 +++
 # Hi! Welcome to my Academic Website
 
